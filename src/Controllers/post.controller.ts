@@ -11,46 +11,54 @@ class postController {
       title: req.body.title,
       author: req.body.author,
       description: req.body.description,
+      createdAt: new Date().toISOString(),
       published: req.body.published,
     };
+
     //validating the request
     const { error, value } = PostSchemaValidate.validate(data);
 
-    if (error) {
-      res.send(error.message);
-    } else {
-      //call the create post function in the service and pass the data from the request
-      const post = await postServices.createPost(value);
-      res.status(201).send(post);
-    }
+    if (error) res.json(error.message);
+
+    //call the create post function in the service and pass the data from the request
+    const post = await postServices.createPost(value);
+
+    res.status(201).json(post);
   };
 
   //get all posts
   getPosts = async (req: Request, res: Response) => {
     const posts = await postServices.getPosts();
-    res.send(posts);
+
+    res.status(200).json(posts);
   };
 
   //get a single post
   getAPost = async (req: Request, res: Response) => {
     //get id from the parameter
-    const id = req.params.id;
+    const { id } = req.params;
+
     const post = await postServices.getPost(id);
-    res.send(post);
+
+    res.status(200).json(post);
   };
 
   //update post
   updatePost = async (req: Request, res: Response) => {
-    const id = req.params.id;
+    const { id } = req.params;
+
     const post = await postServices.updatePost(id, req.body);
-    res.send(post);
+
+    res.json(post);
   };
 
   //delete a post
   deletePost = async (req: Request, res: Response) => {
-    const id = req.params.id;
+    const { id } = req.params;
+
     await postServices.deletePost(id);
-    res.send("post deleted");
+
+    res.json("post deleted");
   };
 }
 
